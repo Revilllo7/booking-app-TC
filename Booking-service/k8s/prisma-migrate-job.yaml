@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: booking-service-migrate
+  namespace: booking-app
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: migrate
+          image: revilllo/booking-service:latest
+          command: ["npx", "prisma", "migrate", "deploy"]
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@booking-db:5432/bookingdb"
+      restartPolicy: OnFailure

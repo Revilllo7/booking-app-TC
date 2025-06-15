@@ -1,0 +1,124 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "3002:3000"
+    depends_on:
+      - booking-service
+      - user-service
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: npm run dev
+
+  booking-service:
+    build:
+      context: ./booking-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@booking-db:5432/bookingdb
+    depends_on:
+      - booking-db
+    networks:
+      - app-network
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build:
+      context: ./user-service
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@user-db:5432/userdb
+    depends_on:
+      - user-db
+    networks:
+      - app-network
+    ports:
+      - "3003:3003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/auth/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: npm run dev
+    volumes:
+      - ./user-service:/app
+
+  booking-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookingdb
+    volumes:
+      - booking-db-data:/var/lib/postgresql/data
+      - ./booking-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: userdb
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+      - ./user-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+volumes:
+  booking-db-data:
+  user-db-data:
+
+networks:
+  app-network:
+    driver: bridge

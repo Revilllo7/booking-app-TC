@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-init-sql
+  namespace: booking-app
+data:
+  init.sql: |
+    CREATE TABLE users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(100) UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role VARCHAR(20) NOT NULL DEFAULT 'client',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );

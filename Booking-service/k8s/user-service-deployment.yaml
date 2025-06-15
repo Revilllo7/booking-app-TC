@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: booking-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: user-service
+          image: revilllo/user-service:latest
+          ports:
+            - containerPort: 3003
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@user-db:5432/userdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: booking-app
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 3003
+      targetPort: 3003
