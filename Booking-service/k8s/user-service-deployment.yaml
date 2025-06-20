@@ -13,8 +13,6 @@ spec:
       labels:
         app: user-service
     spec:
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: user-service
           image: revilllo/user-service:latest

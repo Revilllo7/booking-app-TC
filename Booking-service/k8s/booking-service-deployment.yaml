@@ -13,8 +13,6 @@ spec:
       labels:
         app: booking-service
     spec:
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: booking-service
           image: revilllo/booking-service:latest

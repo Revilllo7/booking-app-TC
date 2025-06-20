@@ -209,3 +209,52 @@ kubectl apply -f k8s/ingress.yaml
 Aplikacja dostępna na `http://localhost:3000`
 
 ---
+
+## Cheat sheet commands `<>` for placeholders
+
+### Docker Compose
+
+List all containers:
+`docker ps`
+
+View logs for a service
+`docker-compose logs <booking-service-booking-service-1>`
+
+Access a running container (get a shell)
+`docker exec -it <booking-service-booking-service-1> sh`
+
+Ping another service by container
+`docker exec -it <booking-service-booking-service-1> ping <booking-service-frontend-1>`
+
+Connect to Postgres inside the container
+`docker exec -it <booking-service-booking-db-1> psql -U postgres -d <bookingdb>`
+
+Check health status
+`docker inspect --format='{{json .State.Health}}' <booking-service-booking-service-1>`
+
+### Kubernetes
+
+List all pods:
+`kubectl get pods -n booking-app`
+
+View logs for a pod:
+`kubectl logs <pod_name> -n booking-app`
+
+Exec into a pod:
+`kubectl exec -it <pod_name> -n booking-app -- sh`
+
+Exec into a pod (for Postgres)
+`kubectl exec -it <postgres_pod> -n booking-app -- psql -U postgres -d bookingdb`
+
+Ping another service/log from inside a pod:
+`kubectl exec -it <booking-service_pod_name> -n booking-app -- ping frontend`
+
+Port-forward
+`kubectl port-forward svc/<frontend> 3000:80 -n booking-app`
+
+Get service endpoints:
+`kubectl get svc -n booking-app`
+
+
+### Test Connectivity:
+`kubectl exec -it <frontend_pod> -n booking-app -- apk add curl`

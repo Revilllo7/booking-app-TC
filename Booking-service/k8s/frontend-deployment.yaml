@@ -13,8 +13,6 @@ spec:
       labels:
         app: frontend
     spec:
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: frontend
           image: revilllo/frontend:latest

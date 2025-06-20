@@ -76,7 +76,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: bookingdb
     volumes:
+    # THIS PUPPY STORES THE DATA SO IT STAYS ACROSS CONTAINER REMOVALS
+    # Unless you remove the volume, then it's gone, poof, reduced to atoms
       - booking-db-data:/var/lib/postgresql/data
+      
+    # THIS IS A BIND MOUNT - COPIES LOCAL INIT.SQL FILES INTO CONTAINER ON START
       - ./booking-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
@@ -96,7 +100,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: userdb
     volumes:
+    # THIS PUPPY STORES THE DATA SO IT STAYS ACROSS CONTAINER REMOVALS
+    # Unless you remove the volume, then it's gone, poof, reduced to atoms
       - user-db-data:/var/lib/postgresql/data
+
+    # THIS IS A BIND MOUNT - COPIES LOCAL INIT.SQL FILES INTO CONTAINER ON START
       - ./user-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5434:5432"
