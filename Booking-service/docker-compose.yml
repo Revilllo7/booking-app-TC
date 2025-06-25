@@ -65,8 +65,8 @@ services:
       timeout: 5s
       retries: 5
     command: npm run dev
-    volumes:
-      - ./user-service:/app
+    # volumes:
+      # - ./user-service:/app
 
   booking-db:
     image: postgres:15
